@@ -1,0 +1,17 @@
+{
+  "name": "pi",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:akreiling/pi.git",
+  "author": "Andrew Kreiling <akreiling@pobox.com>",
+  "license": "MIT",
+  "dependencies": {
+    "csv-parse": "^4.15.4"
+  },
+  "devDependencies": {
+    "eslint": "^7.26.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.2",
+    "eslint_d": "^10.1.1"
+  }
+}
