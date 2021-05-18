@@ -6,7 +6,8 @@
   "author": "Andrew Kreiling <akreiling@pobox.com>",
   "license": "MIT",
   "dependencies": {
-    "csv-parse": "^4.15.4"
+    "csv-parse": "^4.15.4",
+    "redis": "^3.1.2"
   },
   "devDependencies": {
     "eslint": "^7.26.0",
