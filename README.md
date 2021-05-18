@@ -16,6 +16,10 @@ the most convoluted way possible
 
 `redis-server`
 
-## example
+## examples
 
     node index.js s3://lab.userhostilesoftware.com/felix/sources/1k.csv
+
+    node index.js s3://lab.userhostilesoftware.com/felix/sources/1mm.csv
+
+    node index.js s3://lab.userhostilesoftware.com/felix/sources/10mm.csv
