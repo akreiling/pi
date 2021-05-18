@@ -8,7 +8,7 @@ const s3 = (uri) => (emit, done) => {
   const parser = parse({ delimiter: ',' });
   parser.on('readable', () => {
     let record;
-    while (record = parser.read()) { // eslint-disable-line no-cond-assign
+    while ((record = parser.read())) {
       emit(record);
     }
   });
@@ -18,7 +18,7 @@ const s3 = (uri) => (emit, done) => {
     res.on('data', (chunk) => parser.write(chunk));
     res.on('end', () => {
       emit('TERMINAL');
-      parser.end()
+      parser.end();
     });
   });
 };
@@ -31,7 +31,7 @@ if (require.main === module) {
   let n = 0;
   const f = s3(url);
   f(
-    () => n += 1, // eslint-disable-line no-return-assign
+    () => (n += 1),
     () => console.log('processed', n, 'records'),
   );
 }
