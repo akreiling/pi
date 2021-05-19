@@ -1,0 +1,8 @@
+---
+- ingest:
+    url: "s3://lab.userhostilesoftware.com/felix/sources/1k.csv"
+- partition:
+    n: 4
+- map:
+    url: "https://github.com/akreiling/pi/blob/main/pi.js"
+- avg
