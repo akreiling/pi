@@ -1,4 +1,4 @@
-const flexi = require('./flexi');
+const flexi = require('./flexi/planner');
 const pi = require('./pi');
 
 const main = async () => {
@@ -8,7 +8,8 @@ const main = async () => {
     .batch(url)     // ingest a batch file into a stream
     .partition(4)   // split stream into an arbitrary number of partitions
     .map(pi)        // map every value by user provided function
-    .avg();         // calculate running average across the stream partitions
+    .avg()          // calculate running average across the stream partitions
+    .start();
 };
 
 main();
