@@ -37,6 +37,7 @@ class RedisConsumer {
         }
 
         if (this.is_terminal) {
+          console.log('terminal consumer', this.url);
           this.client.tryAndQuit();
         } else {
           setTimeout(() => this.run(new_id), 0);
