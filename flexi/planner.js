@@ -53,9 +53,6 @@ class Planner {
     const f = (cache) => {
       const values = Object.values(cache);
       const pi = values.reduce((a, v) => a + v, 0.0) / values.length;
-
-      console.log('avg', pi);
-
       return [pi];
     };
 
