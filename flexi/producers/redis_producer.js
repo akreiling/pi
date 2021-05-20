@@ -15,8 +15,14 @@ class RedisProducer {
     this.client.xtrim(this.key, 'MAXLEN', 0);
   }
 
+  terminal() {
+    console.log('terminal producer', this.url);
+    const args = [this.key, '*', 'state', 'TERMINAL'];
+    this.client.xadd(args);
+  }
+
   stop() {
-    this.client.quit();
+    this.client.tryAndQuit();
   }
 
   emit(data) {

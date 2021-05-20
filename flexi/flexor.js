@@ -18,6 +18,7 @@ class Flexor {
     this.f = this.config.f.bind(this);
 
     this.partition = 0;
+    this.terminals = [];
   }
 
   buildConsumers() {
@@ -57,12 +58,18 @@ class Flexor {
     this.consumers.forEach((c) => c.start());
   }
 
-  done() {
-    console.log('done');
+  terminal(key) {
+    this.terminals.push(key);
+
+    if (this.terminals.length === this.config.sources.length) {
+      this.stop();
+    }
   }
 
   stop() {
-    console.log('stop');
+    this.consumers.forEach((c) => c.stop());
+    this.producers.forEach((p) => p.terminal());
+    this.producers.forEach((p) => p.stop());
   }
 
   eval(data) {

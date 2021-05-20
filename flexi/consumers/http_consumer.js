@@ -5,7 +5,7 @@ class HttpConsumer {
   constructor(flexor, uri) {
     this.url = uri.toString();
     this.eval = flexor.eval.bind(flexor);
-    this.done = flexor.done.bind(flexor);
+    this.terminal = flexor.terminal.bind(flexor);
   }
 
   start() {
@@ -18,7 +18,7 @@ class HttpConsumer {
         this.eval(record, this.url);
       }
     });
-    parser.on('end', () => this.done());
+    parser.on('end', () => this.terminal(this.url));
 
     http.get(this.url, (res) => {
       res.on('data', (chunk) => parser.write(chunk));

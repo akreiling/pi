@@ -1,6 +1,7 @@
 const Flexor = require('./flexor');
 const Fanout = require('./flexors/fanout');
 const Fanin = require('./flexors/fanin');
+const Map = require('./flexors/map');
 
 class Planner {
   constructor() {
@@ -41,7 +42,7 @@ class Planner {
         sinks: [`redis://localhost:6379/stream:map:${p}`],
         f,
       };
-      const flexor = new Flexor(config);
+      const flexor = new Map(config);
       this.flexors.push(flexor);
     }
 
