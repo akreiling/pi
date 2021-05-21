@@ -1,4 +1,4 @@
-const Flexor = require('./flexor');
+const Generator = require('./flexors/generator');
 const Fanout = require('./flexors/fanout');
 const Fanin = require('./flexors/fanin');
 const Map = require('./flexors/map');
@@ -14,7 +14,7 @@ class Planner {
       sources: [uri],
       sinks: ['redis://localhost:6379/stream:source'],
     };
-    const flexor = new Flexor(config);
+    const flexor = new Generator(config);
     this.flexors.push(flexor);
 
     return this;
