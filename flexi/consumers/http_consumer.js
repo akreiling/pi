@@ -21,7 +21,7 @@ class HttpConsumer {
     parser.on('end', () => this.terminal(this.url));
 
     http.get(this.url, (res) => {
-      res.on('data', (chunk) => parser.write(chunk));
+      res.pipe(parser);
       res.on('end', () => parser.end());
     });
   }
