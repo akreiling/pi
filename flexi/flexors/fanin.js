@@ -17,7 +17,9 @@ module.exports = Fanin;
 
 if (require.main === module) {
   const main = async () => {
-    const n = parseInt(process.argv[0 + 2], 10);
+    const source = process.argv[0 + 2];
+    const n = parseInt(process.argv[0 + 3], 10);
+    const sink = process.argv[0 + 4];
 
     const f = (cache) => {
       const values = Object.values(cache);
@@ -27,11 +29,11 @@ if (require.main === module) {
 
     const config = {
       sources: [],
-      sinks: ['redis://localhost:6379/stream:collect'],
+      sinks: [sink],
       f,
     };
     for (let p = 0; p < n; ++p) {
-      config.sources.push(`redis://localhost:6379/stream:map:${p}`);
+      config.sources.push(`${source}:${p}`);
     }
     const flexor = new Fanin(config);
     flexor.start();

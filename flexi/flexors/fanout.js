@@ -7,14 +7,16 @@ module.exports = Fanout;
 
 if (require.main === module) {
   const main = async () => {
-    const n = parseInt(process.argv[0 + 2], 10);
+    const source = process.argv[0 + 2];
+    const sink = process.argv[0 + 3];
+    const n = parseInt(process.argv[0 + 4], 10);
 
     const config = {
-      sources: ['redis://localhost:6379/stream:source'],
+      sources: [source],
       sinks: [],
     };
     for (let p = 0; p < n; ++p) {
-      config.sinks.push(`redis://localhost:6379/stream:partition:${p}`);
+      config.sinks.push(`${sink}:${p}`);
     }
     const flexor = new Fanout(config);
     flexor.start();

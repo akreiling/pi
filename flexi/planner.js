@@ -1,77 +1,85 @@
-const Generator = require('./flexors/generator');
-const Fanout = require('./flexors/fanout');
-const Fanin = require('./flexors/fanin');
-const Map = require('./flexors/map');
-
 class Planner {
   constructor() {
-    this.flexors = [];
+    this.commands = [];
     this.partitions = 1;
   }
 
   batch(uri) {
-    const config = {
-      sources: [uri],
-      sinks: ['redis://localhost:6379/stream:source'],
-    };
-    const flexor = new Generator(config);
-    this.flexors.push(flexor);
+    const args = [];
+    args.push('node');
+    args.push('./flexi/flexors/generator.js');
+
+    args.push(uri);
+
+    args.push('redis://localhost:6379/stream:source:0');
+
+    this.commands.push(args.join(' '));
 
     return this;
   }
 
   partition(n) {
-    const config = {
-      sources: ['redis://localhost:6379/stream:source'],
-      sinks: [],
-    };
-    for (let p = 0; p < n; ++p) {
-      config.sinks.push(`redis://localhost:6379/stream:partition:${p}`);
+    const { partitions } = this;
+
+    for (let p = 0; p < partitions; ++p) {
+      const args = [];
+      args.push('node');
+      args.push('./flexi/flexors/fanout.js');
+
+      args.push(`redis://localhost:6379/stream:source:${p}`);
+
+      args.push('redis://localhost:6379/stream:partition');
+      args.push(n);
+
+      this.commands.push(args.join(' '));
     }
-    const flexor = new Fanout(config);
-    this.flexors.push(flexor);
     this.partitions = n;
 
     return this;
   }
 
   map(f) {
-    for (let p = 0; p < this.partitions; ++p) {
-      const config = {
-        sources: [`redis://localhost:6379/stream:partition:${p}`],
-        sinks: [`redis://localhost:6379/stream:map:${p}`],
-        f,
-      };
-      const flexor = new Map(config);
-      this.flexors.push(flexor);
+    const { partitions } = this;
+
+    for (let p = 0; p < partitions; ++p) {
+      const args = [];
+      args.push('node');
+      args.push('./flexi/flexors/map.js');
+
+      args.push(`redis://localhost:6379/stream:partition:${p}`);
+
+      args.push(f);
+
+      args.push(`redis://localhost:6379/stream:map:${p}`);
+
+      this.commands.push(args.join(' '));
     }
 
     return this;
   }
 
   avg() {
-    const f = (cache) => {
-      const values = Object.values(cache);
-      const pi = values.reduce((a, v) => a + v, 0.0) / values.length;
-      return [pi];
-    };
+    const { partitions } = this;
 
-    const config = {
-      sources: [],
-      sinks: ['redis://localhost:6379/stream:collect'],
-      f,
-    };
-    for (let p = 0; p < this.partitions; ++p) {
-      config.sources.push(`redis://localhost:6379/stream:map:${p}`);
+    for (let p = 0; p < 1; ++p) {
+      const args = [];
+      args.push('node');
+      args.push('./flexi/flexors/fanin.js');
+
+      args.push('redis://localhost:6379/stream:map');
+      args.push(partitions);
+
+      args.push(`redis://localhost:6379/stream:collect:${p}`);
+
+      this.commands.push(args.join(' '));
     }
-    const flexor = new Fanin(config);
-    this.flexors.push(flexor);
 
+    this.partitions = 1;
     return this;
   }
 
   start() {
-    this.flexors.forEach((f) => f.start());
+    this.commands.forEach((cmd) => console.log(cmd));
   }
 }
 
