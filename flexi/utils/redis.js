@@ -26,5 +26,6 @@ function createClient(host, port) {
 }
 
 module.exports = {
+  redis,
   createClient,
 };
