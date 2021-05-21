@@ -1,4 +1,7 @@
 const redis = require('redis');
+const { promisifyAll } = require('bluebird');
+
+promisifyAll(redis);
 
 const clients = {};
 const counts = {};

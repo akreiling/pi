@@ -14,35 +14,34 @@ class RedisConsumer {
     this.terminal = flexor.terminal.bind(flexor);
   }
 
-  run(id = '0-0') {
-    this.client.xread('BLOCK', 10, 'STREAMS', this.key, id,
-      (err, res) => {
-        let new_id = id;
-        let payload;
+  async read(id) {
+    const res = await this.client.xreadAsync('BLOCK', 10, 'STREAMS', this.key, id);
+    let new_id = id;
+    let payload;
 
-        if (err) {
-          console.log(err);
-          process.exit(1);
-        }
-
-        if (res !== null) {
-          res[0][1].forEach((message) => {
-            [new_id, [, payload]] = message;
-            if (payload === 'TERMINAL') {
-              this.terminal(this.url);
-            } else {
-              this.eval(JSON.parse(payload), this.url);
-            }
-          });
-        }
-
-        if (this.is_terminal) {
-          console.log('terminal consumer', this.url);
-          this.client.tryAndQuit();
+    if (res !== null) {
+      res[0][1].forEach((message) => {
+        [new_id, [, payload]] = message;
+        if (payload === 'TERMINAL') {
+          this.terminal(this.url);
         } else {
-          setTimeout(() => this.run(new_id), 0);
+          this.eval(JSON.parse(payload), this.url);
         }
       });
+    }
+
+    return new_id;
+  }
+
+  async run() {
+    let id = '0-0';
+    do {
+      // eslint-disable-next-line no-await-in-loop
+      id = await this.read(id);
+    } while (!this.is_terminal);
+
+    console.log('terminal consumer', this.url);
+    this.client.tryAndQuit();
   }
 
   start() {
