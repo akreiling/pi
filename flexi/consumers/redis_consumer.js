@@ -15,19 +15,20 @@ class RedisConsumer {
   }
 
   async read(id) {
-    const res = await this.client.xreadAsync('BLOCK', 10, 'STREAMS', this.key, id);
+    const res = await this.client.xreadAsync('COUNT', 50, 'BLOCK', 10, 'STREAMS', this.key, id);
+
     let new_id = id;
     let payload;
 
     if (res !== null) {
-      res[0][1].forEach((message) => {
+      for await (const message of res[0][1]) {
         [new_id, [, payload]] = message;
         if (payload === 'TERMINAL') {
           this.terminal(this.url);
         } else {
-          this.eval(JSON.parse(payload), this.url);
+          await this.eval(JSON.parse(payload), this.url);
         }
-      });
+      }
     }
 
     return new_id;

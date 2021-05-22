@@ -6,6 +6,7 @@
   "author": "Andrew Kreiling <akreiling@pobox.com>",
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.21.1",
     "bluebird": "^3.7.2",
     "csv-parse": "^4.15.4",
     "redis": "^3.1.2"

@@ -72,7 +72,7 @@ class Flexor {
     this.producers.forEach((p) => p.stop());
   }
 
-  eval(data) {
+  async eval(data) {
     const { state } = this;
     let result;
     let new_state;
@@ -83,7 +83,7 @@ class Flexor {
       [result, new_state] = this.f(data);
     }
 
-    this.producers[this.partition].emit(result);
+    await this.producers[this.partition].emit(result);
     this.partition = (this.partition + 1) % this.producers.length;
     this.state = new_state;
   }

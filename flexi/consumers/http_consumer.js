@@ -1,4 +1,4 @@
-const http = require('http');
+const axios = require('axios');
 const parse = require('csv-parse');
 
 class HttpConsumer {
@@ -8,22 +8,21 @@ class HttpConsumer {
     this.terminal = flexor.terminal.bind(flexor);
   }
 
-  start() {
+  async start() {
     console.log('starting consumer', this.url);
 
-    const parser = parse({ delimiter: ',' });
-    parser.on('readable', () => {
-      let record;
-      while ((record = parser.read())) {
-        this.eval(record, this.url);
-      }
+    const response = await axios.request({
+      method: 'GET',
+      url: this.url,
+      responseType: 'stream',
     });
-    parser.on('end', () => this.terminal(this.url));
+    const parser = response.data.pipe(parse({ delimiter: ',' }));
+    for await (const record of parser) {
+      await this.eval(record, this.url);
+    }
 
-    http.get(this.url, (res) => {
-      res.on('data', (chunk) => parser.write(chunk));
-      res.on('end', () => parser.end());
-    });
+    parser.end();
+    this.terminal(this.url);
   }
 
   stop() {
