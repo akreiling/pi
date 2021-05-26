@@ -14,6 +14,13 @@ if (require.main === module) {
       sources: [source],
       sinks: [sink],
     };
+
+    let fn;
+    if ((fn = process.argv[0 + 4])) {
+      // eslint-disable-next-line global-require,import/no-dynamic-require
+      config.f = require(`../../${fn}`);
+    }
+
     const flexor = new Generator(config);
     flexor.start();
   };

@@ -1,6 +1,7 @@
 const RedisConsumer = require('./consumers/redis_consumer');
 const S3Consumer = require('./consumers/s3_consumer');
 const RedisProducer = require('./producers/redis_producer');
+const StdoutProducer = require('./producers/stdout_producer');
 
 const defaults = {
   sources: [],
@@ -47,6 +48,8 @@ class Flexor {
       switch (uri.protocol) {
         case 'redis:':
           return new RedisProducer(this, uri);
+        case 'stdout:':
+          return new StdoutProducer(this, uri);
         default:
           throw new Error(`Unsupported URI protocol: ${uri.protocol}`);
       }
